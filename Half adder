@@ -1,0 +1,44 @@
+module half_adder(a,b,sum,cout);
+input a,b;
+output sum,cout; // sum and carry
+
+assign sum = a^b;
+assign cout = a&b ;
+
+endmodule
+
+//Testbench for halfadder
+
+module half_adder_testbench;
+reg a,b;
+wire sum,cout;
+
+half_adder h1(a,b,sum,cout);
+
+initial begin 
+ a = 1'b0;
+ b = 1'b0;
+ #20;
+ 
+ a = 1'b0;
+ b = 1'b1;
+ #20;
+
+ a = 1'b1;
+ b = 1'b0;
+ #20;
+
+ a = 1'b1;
+ b = 1'b1;
+ #20;
+ 
+ $finish;
+ end
+endmodule 
+
+
+A	B	Sum	Cout
+0	0	0	0
+0	1	1	0
+1	0	1	0
+1	1	0	1
