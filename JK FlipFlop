@@ -1,0 +1,71 @@
+module jk_flipflop(j,k,clk,reset,Q,Q_bar);
+input j,k,clk,reset;
+output reg Q,Q_bar;
+
+    always@(posedge clk)
+          begin
+            if({reset})
+            {Q,Q_bar}<={1'b0,1'b1};
+
+            else
+                begin
+                case({j,k})
+                2'b00:{Q,Q_bar}<={Q,Q_bar};
+                2'b01:{Q,Q_bar}<={1'b0,1'b1};
+                2'b10:{Q,Q_bar}<={1'b1,1'b0};
+                2'b11:{Q,Q_bar}<={~Q,Q};
+                default:begin end
+                endcase
+         end          
+end
+endmodule
+
+
+// JK FF Test bench
+
+
+module jk_ff_test_bench();
+reg clk,rst,j,k;
+wire q_n,q_n_bar;
+
+  jk_flipflop test_design(j,k,clk,rst,q_n,q_n_bar);
+  
+  initial begin 
+  clk=0;
+  forever #5 clk=~clk;
+  end
+  
+  initial 
+    begin
+     rst=1;
+     #10;
+
+     rst=0;
+     #10;
+
+     j = 1'b0;
+     k = 1'b0;     
+     #10;
+    
+     j = 1'b0;
+     k = 1'b1;     
+     #10;
+     
+     j = 1'b1;
+     k = 1'b0;     
+     #10;
+     
+     j = 1'b1;
+     k = 1'b1;
+     #10;
+  
+     $finish;
+    end 
+endmodule
+
+
+J	K	Qt+1
+0	0	Qt
+0	1	0
+1	0	1
+1	1	~Qt
