@@ -1,0 +1,86 @@
+module full_adder(
+input a,b,c,
+output reg sum,cout
+    );
+  
+  always @(*)
+  begin 
+  case ({a,b,c})
+  3'b000: sum = 0;
+  3'b001: sum = 1;
+  3'b010: sum = 1;
+  3'b011: sum = 0;
+  3'b100: sum = 1;
+  3'b101: sum = 0;
+  3'b110: sum = 0;
+  3'b111: sum = 1;
+  default : sum = 0;
+  endcase 
+  
+  case ({a,b,c})
+  3'b000: cout = 0;
+  3'b001: cout = 0;
+  3'b010: cout = 0;
+  3'b011: cout = 1;
+  3'b100: cout = 0;
+  3'b101: cout = 1;
+  3'b110: cout = 1;
+  3'b111: cout = 1;
+  default : cout = 0;
+  endcase 
+  end  
+endmodule
+
+// Testbench for Full adder
+
+
+module testbench_fulladder;
+reg a,b,c;
+wire sum,cout;
+
+full_adder  f1(a,b,c,sum,cout);
+
+initial begin
+a = 1'b0;
+b = 1'b0;
+c = 1'b0;
+#20;
+
+a = 1'b0;
+b = 1'b0;
+c = 1'b1;
+#20;
+
+a = 1'b0;
+b = 1'b1;
+c = 1'b0;
+#20;
+
+a = 1'b0;
+b = 1'b1;
+c = 1'b1;
+#20;
+
+a = 1'b1;
+b = 1'b0;
+c = 1'b0;
+#20;
+
+a = 1'b1;
+b = 1'b0;
+c = 1'b1;
+#20;
+
+a = 1'b1;
+b = 1'b1;
+c = 1'b0;
+#20;
+
+a = 1'b1;
+b = 1'b1;
+c = 1'b1;
+#20;
+
+$finish;
+end
+endmodule
