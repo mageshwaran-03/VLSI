@@ -1,4 +1,5 @@
 Verilog Code
+
 module BCDupdown(Clk, reset, UpOrDown, Count ); // module Declaration
     // input and output declarations
 input Clk,reset,UpOrDown;
