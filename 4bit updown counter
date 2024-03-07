@@ -1,0 +1,68 @@
+Verilog Code
+module BCDupdown(Clk, reset, UpOrDown, Count ); // module Declaration
+    // input and output declarations
+input Clk,reset,UpOrDown;
+    output [3 : 0] Count;
+    reg [3 : 0] Count = 0;  
+    
+     always @(posedge(Clk),UpOrDown)
+     begin
+        if(reset == 1) 
+            Count <= 0;
+        else
+            begin
+            if(UpOrDown == 1)   // High for Up Counter and Low for Down Counter
+                begin
+                if(Count == 15)
+                    Count <= 0;
+                else
+                    Count <= Count + 1;
+                end
+            else
+                begin
+                if(Count == 0)
+                    Count <= 15;
+                else
+                    Count <= Count - 1;
+                end
+            end
+     end    
+    
+endmodule
+
+Test Bench Code:
+
+module BCDUPDOWNTB;
+    // Inputs
+    reg Clk;
+    reg reset;
+    reg UpOrDown;
+
+    // Outputs
+    wire [3:0] Count;
+
+    // Instantiate the Unit Under Test (UUT)
+    BCDupdown uut (
+        .Clk(Clk), 
+        .reset(reset), 
+        .UpOrDown(UpOrDown), 
+        .Count(Count)
+    );
+ initial Clk = 0;
+    always #100 Clk = ~Clk;
+
+    initial begin
+        // Initialize Inputs
+        Clk = 0;
+        reset = 0;
+        UpOrDown = 0;
+
+        // Wait 100 ns for global reset to finish
+        #100;
+        UpOrDown = 0;
+        
+        // Add stimulus here
+
+    end
+      
+endmodule
