@@ -1,0 +1,45 @@
+module adder(input [3:0] A,
+    input [3:0] B,
+    input C0,
+    output [3:0] S,
+    output C4
+    );
+    wire C1,C2,C3;
+
+    adder4 fa0 (.A(A[0]),.B(B[0]),.CIN(C0),.S(S[0]),.COUT(C1));
+    adder4 fa1 (.A(A[1]),.B(B[1]),.CIN(C1),.S(S[1]),.COUT(C2));
+    adder4 fa2 (.A(A[2]),.B(B[2]),.CIN(C2),.S(S[2]),.COUT(C3));
+    adder4 fa3 (.A(A[3]),.B(B[3]),.CIN(C3),.S(S[3]),.COUT(C4));
+
+endmodule
+
+
+module adder4( input A,
+       input B,
+       input CIN,
+       output S,
+       output COUT
+       );
+       assign S = A^B^CIN;
+       assign COUT = (A&B) | (CIN&(A^B));
+
+
+endmodule
+
+Testbench
+
+module adder_tb();
+reg [3:0] A;
+     reg [3:0] B;
+     reg C0;
+     wire [3:0] S;
+     wire C4;
+     adder dut(.A(A),.B(B),.C0(C0),.S(S),.C4(C4));    
+     initial begin
+     A = 4'b0011;B=4'b0011;C0 = 1'b0; #10;
+     A = 4'b1011;B=4'b0111;C0 = 1'b1; #10;
+     A = 4'b1111;B=4'b1111;C0 = 1'b1; #10;
+     $finish;
+     end
+
+endmodule
