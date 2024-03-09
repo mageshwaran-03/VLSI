@@ -1,71 +1,79 @@
-module SR_FlipFlop(
-    input J,
-    input K,
-     input clk,
-    output Q,
-    output Qbar
-     );
-reg Q,Qbar;
+module sr_flipflop (
+    input S,
+    input R,
+    input clk,
+    output  Q,
+    output  Q_bar
+);
 
+    // Internal state variables
+    reg state_Q, state_Q_bar;
 
-always@(posedge clk)
-begin
-    case({J,K})
-    2'b0_0:Q<=Q;
-    2'b0_1:Q<=1'b0;
-    2'b1_0:Q<=1'b1;
-    2'b1_1:Q<=1'bz;
-endcase
-end
+    // Behavioral model for SR flip-flop
+    always @(posedge clk) begin
+        if (R && !S) begin
+            state_Q <= 0;     // Reset
+            state_Q_bar <= 1; // Q_bar is the complement of Q
+        end else if (!R && S) begin
+            state_Q <= 1;     // Set
+            state_Q_bar <= 0; // Q_bar is the complement of Q
+        end else if (!R && !S) begin
+            state_Q <= state_Q;     // No change
+            state_Q_bar <= state_Q_bar; // No change
+        end else begin
+            state_Q <= 0;     // Undefined state, arbitrarily set to reset
+            state_Q_bar <= 1; // Undefined state, arbitrarily set to reset
+        end
+    end
+
+    // Output assignments
+    assign Q = state_Q;
+    assign Q_bar = state_Q_bar;
 
 endmodule
 
 testbench
 
-module SRflipflopTB;
+module sr_flipflop_tb;
 
+    // Parameters
+    parameter PERIOD = 10; // Clock period
+    parameter DURATION = 100; // Simulation duration
 
-    // Inputs
-    reg J;
-    reg K;
-    reg clk;
+    // Signals
+    reg S, R, clk;
+    wire Q, Q_bar;
 
-    // Outputs
-    wire Q;
-    wire Qbar;
-
-    // Instantiate the Unit Under Test (UUT)
-    SR_FlipFlop uut (
-        .J(J), 
-        .K(K), 
-        .clk(clk), 
-        .Q(Q), 
-        .Qbar(Qbar)
+    // Instantiate the SR flip-flop
+    sr_flipflop sr_ff (
+        .S(S),
+        .R(R),
+        .clk(clk),
+        .Q(Q),
+        .Q_bar(Q_bar)
     );
-initial clk = 0;
-    always #10 clk = ~clk;
+
+    // Clock generation
+    always #((PERIOD/2)) clk = ~clk;
+
+    // Stimulus
     initial begin
-        // Initialize Inputs
-        J = 0;
-        K = 0;
-        clk = 0;
+        // Initial values
+        S = 0; R = 0; clk = 0;
 
-        // Wait 100 ns for global reset to finish
-        #100;
-       J=0;
-        K=1;
-        
-        #100
-        J=1;
-        K=0;
-        
-      #100
-        J=1;
-        K=1; 
-        
-        // Add stimulus here
+        // Apply stimulus
+        #10 S = 1; R = 0; // Set
+        #20 S = 0; R = 1; // Reset
+        #30 S = 1; R = 1; // Invalid input, arbitrary behavior
+        #40 S = 0; R = 0; // No change
 
+        // Finish simulation
+        #DURATION $finish;
     end
-      
-endmodule
 
+    // Display results
+    initial begin
+        $monitor("Time = %0t, S = %b, R = %b, Q = %b, Q_bar = %b", $time, S, R, Q, Q_bar);
+    end
+
+endmodule
